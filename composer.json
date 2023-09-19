@@ -1,0 +1,15 @@
+{
+    "name": "harrison/laravel-product",
+    "autoload": {
+        "psr-4": {
+            "Harrison\\LaravelProduct\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "harrison",
+            "email": "harrison9824003@gmail.com"
+        }
+    ],
+    "require": {}
+}
