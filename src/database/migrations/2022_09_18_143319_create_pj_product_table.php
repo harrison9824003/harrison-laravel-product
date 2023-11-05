@@ -21,9 +21,9 @@ class CreatePjProductTable extends Migration
             $table->string('simple_intro', 255)->comment('簡介');
             $table->text('intro')->comment('介紹');
             $table->string('part_number', 20)->comment('料號');
-            $table->timestamp('start_date')->unllable()->useCurrent()->comment('上架日期');
-            $table->timestamp('end_date')->unllable()->useCurrent()->comment('商品下架日期');
-            $table->integer('user_id')->comment('使用者編號');
+            // $table->timestamp('start_date')->unllable()->useCurrent()->comment('上架日期');
+            // $table->timestamp('end_date')->unllable()->useCurrent()->comment('商品下架日期');
+            // $table->integer('user_id')->comment('使用者編號');
 
             $table->timestamps();
         });

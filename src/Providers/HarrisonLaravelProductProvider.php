@@ -10,7 +10,12 @@ class HarrisonLaravelProductProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+
+        $this->loadViewsFrom(__DIR__ . '/views/mails', 'ProductMails');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->mergeConfigFrom(__DIR__.'/../config/product.php', 'products');
+        $this->loadRoutesFrom(__DIR__.'/../routes/product-api.php');
+        
     }
 
     /**
@@ -18,9 +23,15 @@ class HarrisonLaravelProductProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/views/mails', 'ProductMails');
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes/product-api.php');
+        $models = collect(config('products'));
+
+        $models->each(function($item){
+            $this->app->singleton($item['class'], function () use ($item) {
+                $object = new $item['class']();
+                $object->setModelId($item['id']);
+                return $object;
+            });
+        });
     }
 }
 ?>

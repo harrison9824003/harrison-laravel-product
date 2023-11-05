@@ -14,6 +14,13 @@ use Harrison\LaravelProduct\Models\Product;
 use Exception;
 use Harrison\LaravelProduct\Models\Category;
 use Harrison\LaravelProduct\Models\SpecCategory;
+use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Responses\ApiResponse;
+use Harrison\LaravelProduct\Services\CategoryService;
+use Harrison\LaravelProduct\Services\ProductImageService;
+use Harrison\LaravelProduct\Services\ProductService;
+use Harrison\LaravelProduct\Services\ProductSpecService;
+use Harrison\LaravelProduct\Services\SpecCategoryService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Mail;
@@ -24,55 +31,43 @@ class ProductController extends Controller
     use AuthorizesRequests;
 
     public function __construct(
-        private Product $product,
-        private ProductSpec $productSpec,
-        private ProductImage $productImage,
-        private RedisManager $redis,
+        private ProductService $productService,
+        private CategoryService $categoryService,
+        private SpecCategoryService $specCategoryService,
+        private ProductImageService $productImageService,
+        private ProductSpecService $productSpecService
     ) {
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * 商品列表
      */
-    public function index()
+    public function index(): ApiResponse
     {
-        $products = app(Product::class);
-        $paginate = $products->paginate(10);
-        $binding = [
-            'paginate' => $paginate
-        ];
-        return view('admin.pages.product.list', $binding);
+        $pageCondition = new PageCondition(1,10);
+        $products = $this->productService->getByPage($pageCondition);
+        return new ApiResponse($products->items());
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * 建立商品時需要的內容
      */
-    public function create()
+    public function create(): ApiResponse
     {
         // 全站分類
-        $category = app(Category::class);
-        $data = $category->where('parent_id', '0')->get();
+        $category = $this->categoryService->getByParentId(0);
 
         // 規格
-        $spec = app(SpecCategory::class);
-        $specData = $spec->where('parent_id', '0')->get();
+        $specCategory = $this->specCategoryService->getByParentId(0);
 
-        $binding = [
-            'category_parent' => $data,
-            'spec_parent' => $specData
-        ];
-        return view('admin.pages.product.create', $binding);
+        return new ApiResponse([
+            'category' => $category,
+            'specCategory' => $specCategory
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 儲存商品資料
      */
     public function store(ProductRequest $request)
     {
@@ -87,7 +82,7 @@ class ProductController extends Controller
             'simple_intro',
             'intro',
             'part_number',
-            'start_date'
+            // 'start_date'
         ]);
 
         if (!isset($productInput['market_price']) || empty($productInput['market_price'])) {
@@ -102,16 +97,13 @@ class ProductController extends Controller
             $productInput['part_number'] = '';
         }
 
-        $productInput['end_date'] = '2035-12-31';
+        // $productInput['end_date'] = '2035-12-31';
 
-        $productInput['user_id'] = auth()->id();
+        // $productInput['user_id'] = auth()->id();
 
         DB::beginTransaction();
         try {
-            $product = Product::create($productInput);
-            $product_id = $product->id;
-
-            $productClass = app(Product::class);
+            $product = $this->productService->create($productInput);
 
             // 商品圖片
             if (is_array($files) && count($files) > 0) {
@@ -119,21 +111,21 @@ class ProductController extends Controller
                     $path = $file->storeAs('images', md5(time()) . "." . $file->extension(), 'uploads');
 
                     $imgInput = [
-                        'data_id' => $productClass->getModelId(),
-                        'item_id' => $product_id,
+                        'data_id' => $this->productService->getModelId(),
+                        'item_id' => $product->id,
                         'path' => $path,
                         'data_type' => $file->getClientMimeType(),
                         'description' => $file->getClientOriginalName()
                     ];
-                    productImage::create($imgInput);
+                    $this->productImageService->create($imgInput);
                 }
             }
 
             // 規格
-            foreach ($input['spec_parent_name'] as $k => $spec_name) {
-                $spec_input = [
+            foreach ($input['spec_parent_name'] as $k => $specName) {
+                $specInput = [
                     'category_id' => $input["spec_childen"][$k],
-                    'product_id' => $product_id,
+                    'product_id' => $product->id,
                     'reserve_num' => $input["spec_reserve"][$k],
                     'low_reserve_num' => $input["spec_low_reserve"][$k],
                     'volume' => $input["spec_volume"][$k],
@@ -141,29 +133,35 @@ class ProductController extends Controller
                     'order' => $input["spec_order"][$k]
                 ];
 
-                ProductSpec::create($spec_input);
+                $this->productSpecService->create($specInput);
             }
 
             // 全站分類
-            $category_input = [
-                'data_id' => $productClass->getModelId(),
-                'category_id' => $input['category_childen'],
-                'item_id' => $product_id
-            ];
+            // todo 改寫 event
+            // $category_input = [
+            //     'data_id' => $this->productService->getModelId(),
+            //     'category_id' => $input['category_childen'],
+            //     'item_id' => $product->id
+            // ];
 
-            RelationShipCatory::create($category_input);
+            // RelationShipCatory::create($category_input);
 
             DB::commit();
 
-            cache()->set('product_' . $product_id, $product->toJson());
+            cache()->set('product_' . $product->id, $product->toJson());
             
         } catch (Exception $e) {
             $errors = ['database_error' => $e->getMessage()];
             DB::rollBack();
         }
-        Mail::to(auth()->user())->send(new ProductCreate($product));
+        // todo 改寫 event
+        // Mail::to(auth()->user())->send(new ProductCreate($product));
 
-        return redirect()->route('product.index')->withErrors($errors);
+        if (!empty($errors)) {
+            return new ApiResponse($errors, null, 400);
+        }
+
+        return new ApiResponse(true);
     }
 
     /**
@@ -177,46 +175,24 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 取修改頁內容
      */
     public function edit($id)
     {
-        $product = app(Product::class);
-        $pImage = app(ProductImage::class);
-        $pSpec = app(ProductSpec::class);
-        $rCategory = app(RelationShipCatory::class);
+        // $this->authorize('update-product', $productObj);
 
-        // 全站分類
-        $category = app(Category::class);
-
-        // 規格
-        $spec = app(SpecCategory::class);
-
-        $productObj = $product->findOrFail($id);
-
-        $this->authorize('update-product', $productObj);
-
-        $binding = [
-            'product' => $productObj,
-            'p_images' => $pImage->where('item_id', $id)->where('data_id', $product->getModelId())->get(),
-            'p_specs' => $pSpec->where('product_id', $id)->get(),
-            'r_category' => $rCategory->where('item_id', $id)->where('data_id', $product->getModelId())->first(),
-            'category_parent' => $category->where('parent_id', '0')->get(),
-            'spec_parent' => $spec->where('parent_id', '0')->get()
-        ];
-
-        return view('admin.pages.product.edit', $binding);
+        return new ApiResponse([
+            'product' => $this->productService->find($id),
+            'p_images' => $this->productImageService->getProductImage($id),
+            'p_specs' => $this->productSpecService->getProductSpec($id),
+            // 'r_category' => $rCategory->where('item_id', $id)->where('data_id', $product->getModelId())->first(),
+            'category_parent' => $this->categoryService->getByParentId(0),
+            'spec_parent' => $this->specCategoryService->getByParentId(0)
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 更新商品資料
      */
     public function update(ProductRequest $request, $id)
     {
@@ -224,39 +200,37 @@ class ProductController extends Controller
         $files = $request->file('productImg');
 
         // 商品基本資料
-        $pInput = $request->safe()->only([
+        $input = $request->safe()->only([
             'name',
             'price',
             'market_price',
             'simple_intro',
             'intro',
             'part_number',
-            'start_date'
+            // 'start_date'
         ]);
 
 
-        if (!isset($pInput['market_price']) || empty($pInput['market_price'])) {
-            $pInput['market_price'] = 0;
+        if (!isset($input['market_price']) || empty($input['market_price'])) {
+            $input['market_price'] = 0;
         }
 
-        if (!isset($pInput['simple_intro']) || empty($pInput['simple_intro'])) {
-            $pInput['simple_intro'] = '';
+        if (!isset($input['simple_intro']) || empty($input['simple_intro'])) {
+            $input['simple_intro'] = '';
         }
 
-        if (!isset($pInput['simple_intro']) || empty($pInput['simple_intro'])) {
-            $pInput['part_number'] = '';
+        if (!isset($input['simple_intro']) || empty($input['simple_intro'])) {
+            $input['part_number'] = '';
         }
 
-        $pInput['end_date'] = '2035-12-31';
-        $pInput['user_id'] = auth()->id();
+        // $input['end_date'] = '2035-12-31';
+        // $input['user_id'] = auth()->id();
 
         DB::beginTransaction();
         try {
 
-            $product = app(Product::class);
-            $product = $product->findOrFail($id);
-            $product_id = $product->id;
-            $product->update($pInput);
+            $product = $this->productService->find($id);
+            $this->productService->update($product, $input);
 
             $productClass = app(Product::class);
 
@@ -265,14 +239,13 @@ class ProductController extends Controller
                 foreach ($files as $file) {
                     $path = $file->storeAs('images', md5(time()) . "." . $file->extension(), 'uploads');
 
-                    $img_input = [
-                        'data_id' => $productClass->getModelId(),
-                        'item_id' => $product_id,
+                    $this->productImageService->create([
+                        'data_id' => $this->productService->getModelId(),
+                        'item_id' => $product->id,
                         'path' => $path,
                         'data_type' => $file->getClientMimeType(),
                         'description' => $file->getClientOriginalName()
-                    ];
-                    ProductImage::create($img_input);
+                    ]);
                 }
             }
 
@@ -281,7 +254,7 @@ class ProductController extends Controller
             foreach ($input['spec_parent_name'] as $k => $spec_name) {
                 $spec_input = [
                     'category_id' => $input["spec_childen"][$k],
-                    'product_id' => $product_id,
+                    'product_id' => $product->id,
                     'reserve_num' => $input["spec_reserve"][$k],
                     'low_reserve_num' => $input["spec_low_reserve"][$k],
                     'volume' => $input["spec_volume"][$k],
@@ -289,45 +262,43 @@ class ProductController extends Controller
                     'order' => $input["spec_order"][$k]
                 ];
 
-                $pSpec = app(ProductSpec::class);
                 if ($input["spec_id"][$k] == '0') {
-                    $pSpec->create($spec_input);
+                    $this->productSpecService->create($spec_input);
                 } else {
-                    $obj = $pSpec->findOrFail($input["spec_id"][$k]);
-                    $obj->update($spec_input);
+                    $spec = $this->productSpecService->find($input["spec_id"][$k]);
+                    $this->productSpecService->update($spec, $spec_input);
                 }
             }
 
             // 全站分類
-            $category_input = [
-                'data_id' => $productClass->getModelId(),
-                'category_id' => $input['category_childen'],
-                'item_id' => $product_id
-            ];
+            // todo event
+            // $category_input = [
+            //     'data_id' => $this->productService->getModelId(),
+            //     'category_id' => $input['category_childen'],
+            //     'item_id' => $product->id
+            // ];
 
-            $category = app(RelationShipCatory::class);
-            $obj = $category->findOrFail($input['category_id']);
-            $obj->update($category_input);
+            // $category = app(RelationShipCatory::class);
+            // $obj = $category->findOrFail($input['category_id']);
+            // $obj->update($category_input);
             
-            cache()->set('product_' . $product_id, $product->toJson());
-            $this->redis->rpush('test', '123');
-            Mail::to(auth()->user())->later(60, new ProductUpdate($product));
+            // cache()->set('product_' . $product->id, $product->toJson());
+            // Mail::to(auth()->user())->later(60, new ProductUpdate($product));
 
             DB::commit();
         } catch (Exception) {
+            $errors = ['database_error' => $e->getMessage()];
             DB::rollBack();
         }
 
-        return redirect()->route('product.edit', ['product' => $id]);
+        if (!empty($errors)) {
+            return new ApiResponse($errors, null, 400);
+        }
+
+        return new ApiResponse(true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function destroy($id): ApiResponse
     {
         try {
             DB::transaction(function () use ($id) {
@@ -338,78 +309,63 @@ class ProductController extends Controller
                 $rCategory = app(RelationShipCatory::class);
 
                 // 商品資料刪除
-                $data = $product->findOrFail($id);
+                $data = $this->productService->find($id);
                 $data->delete();
 
                 // 圖片資料
-                $images = $pImage->where('item_id', $id)->where('data_id', $product->getModelId())->get();
-                $d_image = [];
+                $images = $this->productImageService->getProductImage($id);
                 foreach ($images as $k => $image) {
-                    $d_image[] = public_path($image->path);
+                    @unlink(public_path($image->path));
                     $image->delete();
                 }
 
                 // 規格
-                $pSpec->where('product_id', $id)->delete();
+                $this->productSpecService->deleteProductSpec($id);
 
                 // 全站分類
-                $rCategory->where('item_id', $id)->where('data_id', $product->getModelId())->delete();
+                // $rCategory->where('item_id', $id)->where('data_id', $product->getModelId())->delete();
 
-                // 圖片檔案刪除
-                foreach ($d_image as $k => $path) {
-                    @unlink(public_path($path));
-                }
-
-                event(new DeleteProduct(auth()->user(), $data));
+                // event(new DeleteProduct(auth()->user(), $data));
             });
         } catch (Exception $e) {
-            return response()->json([
-                'data' => [],
+            return new ApiResponse([
                 'error' => $e->getMessage(),
                 'status' => 0
-            ]);
+            ], null, 400);
         }
 
-        return response()->json(['status' => '1', 'msg' => '刪除成功']);
+        return new ApiResponse([
+            'status' => '1',
+            'msg' => '刪除成功'
+        ], null, 400);
     }
 
     public function getChildenSpec($id)
     {
         try {
-            $spec = app(SpecCategory::class);
-            $data = $spec->select(['id', 'name', 'parent_id'])->where('parent_id', $id)->get();
+            $data = $this->specCategoryService->getChildenSpec($id);
         } catch (Exception $e) {
-            return response()->json([
-                'data' => [],
+            return new ApiResponse([
                 'error' => $e->getMessage(),
                 'status' => 0
-            ]);
+            ], null, 400);
         }
 
-        return response()->json([
-            'data' => $data,
-            'status' => 1
-        ]);
+        return new ApiResponse($data);
     }
 
     public function deleteSpec($id)
     {
         if (empty($id)) {
-            return response()->json([
-                'data' => [],
+            return new ApiResponse([
                 'error' => 'empyt id value',
                 'status' => 0
-            ]);
+            ], null, 400);
         }
 
-        $spec = app(ProductSpec::class);
-        $data = $spec->findOrFail($id);
+        $data = $this->productSpecService->find($id);
         $data->delete();
 
-        return response()->json([
-            'data' => [],
-            'msg' => '刪除成功!',
-            'status' => 1
-        ]);
+        return new ApiResponse(true);
     }
 }
