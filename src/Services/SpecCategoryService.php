@@ -3,6 +3,8 @@
 namespace Harrison\LaravelProduct\Services;
 
 use Harrison\LaravelProduct\Models\SpecCategory;
+use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class SpecCategoryService
@@ -23,6 +25,24 @@ class SpecCategoryService
             ->select(['id', 'name', 'parent_id'])
             ->where('parent_id', $parentId)
             ->get();
+    }
+
+    public function getByPage(PageCondition $condition): LengthAwarePaginator
+    {
+        return $this->specCategory->paginate(
+            $prePage = $condition->getValue('limit'),
+            $columns = ['*']
+        );
+    }
+
+    public function create(array $input): SpecCategory
+    {
+        return $this->specCategory->create($input);
+    }
+
+    public function find(int $id): SpecCategory
+    {
+        return $this->specCategory->findOrFail($id);
     }
 
     /**

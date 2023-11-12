@@ -28,8 +28,6 @@ use Illuminate\Redis\RedisManager;
 
 class ProductController extends Controller
 {
-    use AuthorizesRequests;
-
     public function __construct(
         private ProductService $productService,
         private CategoryService $categoryService,
@@ -148,7 +146,7 @@ class ProductController extends Controller
 
             DB::commit();
 
-            cache()->set('product_' . $product->id, $product->toJson());
+            // cache()->set('product_' . $product->id, $product->toJson());
             
         } catch (Exception $e) {
             $errors = ['database_error' => $e->getMessage()];
@@ -334,10 +332,7 @@ class ProductController extends Controller
             ], null, 400);
         }
 
-        return new ApiResponse([
-            'status' => '1',
-            'msg' => '刪除成功'
-        ], null, 400);
+        return new ApiResponse(true);
     }
 
     public function getChildenSpec($id)
@@ -352,20 +347,5 @@ class ProductController extends Controller
         }
 
         return new ApiResponse($data);
-    }
-
-    public function deleteSpec($id)
-    {
-        if (empty($id)) {
-            return new ApiResponse([
-                'error' => 'empyt id value',
-                'status' => 0
-            ], null, 400);
-        }
-
-        $data = $this->productSpecService->find($id);
-        $data->delete();
-
-        return new ApiResponse(true);
     }
 }

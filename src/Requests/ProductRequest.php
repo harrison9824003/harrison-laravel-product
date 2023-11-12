@@ -2,21 +2,10 @@
 
 namespace Harrison\LaravelProduct\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProductRequest extends FormRequest
+class ProductRequest extends ApiRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        return true;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -35,12 +24,12 @@ class ProductRequest extends FormRequest
             'simple_intro' => 'nullable|string|max:255',
             'intro' => 'required|string|max:2000',
             'part_number' => 'nullable|string|max:100',
-            'start_date' => 'required|date_format:Y-m-d',
+            // 'start_date' => 'required|date_format:Y-m-d',
             'productImg.*' => 'mimes:jpg,jpeg,png|max:2000',
-            'category_name_parent' => 'string',
-            'category_parent' => 'integer',
-            'category_name_childen' => 'string',
-            'category_childen' => 'integer',
+            // 'category_name_parent' => 'string',
+            // 'category_parent' => 'integer',
+            // 'category_name_childen' => 'string',
+            // 'category_childen' => 'integer',
             'spec_parent_name.*' => 'string',
             'spec_parent.*' => 'integer',
             'spec_name_childen.*' => 'string',
@@ -58,10 +47,10 @@ class ProductRequest extends FormRequest
         return [
             'productImg.*.mimes' => '僅能上傳格視為 jpg,jpeg,png 圖片',
             'productImg.*.max' => '圖片最大尺寸為 2MB',
-            'category_name_parent.string' => '全站類別名稱須為文字',
-            'category_parent.integer' => '全站類別id必須為數字',
-            'category_name_childen.string' => '全站子類別名稱須為文字',
-            'category_childen.integer' => '全站子類別id必須為數字',
+            // 'category_name_parent.string' => '全站類別名稱須為文字',
+            // 'category_parent.integer' => '全站類別id必須為數字',
+            // 'category_name_childen.string' => '全站子類別名稱須為文字',
+            // 'category_childen.integer' => '全站子類別id必須為數字',
             'spec_parent_name.*.string' => '規格分類名稱須為文字',
             'spec_parent.*.integer' => '規格分類id須為數字',
             'spec_name_childen.*.string' => '規格子分類名稱須為文字',

@@ -4,166 +4,99 @@ namespace Harrison\LaravelProduct\Controllers;
 
 use App\Http\Controllers\Controller;
 use Harrison\LaravelProduct\Models\SpecCategory;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Requests\ProductSpecRequest;
+use Harrison\LaravelProduct\Responses\ApiResponse;
+use Harrison\LaravelProduct\Services\SpecCategoryService;
 
 class SpecCategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function __construct(
+        private SpecCategoryService $specCategoryService
+    ) {
+    }
+
     public function index()
     {
-        $spec_category = app(SpecCategory::class);
-        $paginate = $spec_category->paginate(10);
-        $binding = [
-            'paginate' => $paginate
-        ];
+        $pageCondition = new PageCondition(1,10);
+        $specs = $this->specCategoryService->getByPage($pageCondition);
 
-        return view('admin.pages.product.spec_list', $binding);
+        return new ApiResponse($specs->items());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        $spec_category = app(SpecCategory::class);
-        $parent_category = $spec_category->where('parent_id', '0')->get();
-        $spec_category->refresh();
+        $parent_category = $this->specCategoryService->getByParentId(0);
 
-        $binding = [
+        return new ApiResponse([
             'parent_category' => $parent_category
-        ];
-        return view('admin.pages.product.spec_create', $binding);
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(ProductSpecRequest $request)
     {
+        // todo request 取得 from 物件
         $input = $request->only(['name', 'parent_id']);
-        $rules = [
-            'name' => 'required|unique:pj_spec_category,name|max:255',
-            'parent_id' => 'nullable|integer',
-        ];
-        $validator = Validator::make($input, $rules);
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput($input);
-        }
 
         if (!isset($input['parent_id']) || empty($input['parent_id'])) {
             $input['parent_id'] = 0;
         }
 
-        $spec_category = app(SpecCategory::class);
-        $spec_category->create($input);
+        $this->specCategoryService->create($input);
 
-        return redirect(route('spec.index'));
+        return new ApiResponse(true);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function edit(int $id)
     {
-        $spec_category = app(SpecCategory::class);
-        $parent_category = $spec_category->where('parent_id', '0')->where('id', '!=', $id)->get();
-        $spec_category->refresh();
+        $parent_category = $this->specCategoryService->getByParentId();
 
-        $current_spec = $spec_category->findOrFail($id);
+        $current_spec = $this->specCategoryService->find($id);
         $parent_name = '';
 
+        // todo 改成樹狀結構回傳
         if ($current_spec->parent_id != '0') {
             $parent = $parent_category->filter(function ($value, $key) use ($current_spec) {
-                return ( $value->id == $current_spec->parent_id);
+                return ($value->id == $current_spec->parent_id);
             });
             $parent_name = $parent->first()->name;
         }
 
-        $binding = [
+        return new ApiResponse([
             'spec_category' => $current_spec,
             'parent_category' => $parent_category,
             'parent_name' => $parent_name
-        ];
-        return view('admin.pages.product.spec_edit', $binding);
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function update(ProductSpecRequest $request, int $id)
     {
         $input = $request->only(['name', 'parent_id']);
 
-        $spec_category = app(SpecCategory::class);
-        $spec_category = $spec_category->find($id);
-
-        $rules = [
-            'name' => [
-                'required',
-                Rule::unique('pj_spec_category')->ignore($id),
-                'max:255'
-            ],
-            'parent_id' => 'nullable|integer',
-        ];
-        $validator = Validator::make($input, $rules);
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput($input);
-        }
+        $spec_category = $this->specCategoryService->find($id);
 
         if (!isset($input['parent_id']) || empty($input['parent_id'])) {
             $input['parent_id'] = 0;
         }
-
 
         $spec_category->name = $input['name'];
         $spec_category->parent_id = $input['parent_id'];
 
         $spec_category->save();
 
-        return redirect(route('spec.edit', ['spec' => $id]));
+        return new ApiResponse(true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        $spec_category = app(SpecCategory::class);
-        $spec_category = $spec_category->findOrFail($id);
+        $spec_category = $this->specCategoryService->find($id);
         $spec_category->delete();
 
-        return response()->json(['status' => '1', 'msg' => '刪除成功']);
+        return new ApiResponse(true);
     }
 }
