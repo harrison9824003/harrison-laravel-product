@@ -12,9 +12,8 @@ use Harrison\LaravelProduct\Models\ProductImage;
 use Harrison\LaravelProduct\Models\ProductSpec;
 use Harrison\LaravelProduct\Models\Product;
 use Exception;
-use Harrison\LaravelProduct\Models\Category;
-use Harrison\LaravelProduct\Models\SpecCategory;
 use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Requests\ProductPageRequest;
 use Harrison\LaravelProduct\Responses\ApiResponse;
 use Harrison\LaravelProduct\Services\CategoryService;
 use Harrison\LaravelProduct\Services\ProductImageService;
@@ -22,7 +21,6 @@ use Harrison\LaravelProduct\Services\ProductService;
 use Harrison\LaravelProduct\Services\ProductSpecService;
 use Harrison\LaravelProduct\Services\SpecCategoryService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Redis\RedisManager;
 
@@ -40,11 +38,19 @@ class ProductController extends Controller
     /**
      * 商品列表
      */
-    public function index(): ApiResponse
+    public function index(ProductPageRequest $request): ApiResponse
     {
-        $pageCondition = new PageCondition(1,10);
+        $pageCondition = new PageCondition(
+            $request->get('currentPage', 1),
+            $request->get('perPage', 10)
+        );
         $products = $this->productService->getByPage($pageCondition);
-        return new ApiResponse($products->items());
+        return new ApiResponse($products->items(), [
+            "perPage" => $products->perPage(),
+            "currentPage" => $products->currentPage(),
+            "total" => $products->total(),
+            "lastPage" => $products->lastPage()
+        ]);
     }
 
     /**
@@ -70,6 +76,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $input = $request->all();
+        // todo 全站圖片套件
         $files = $request->file('productImg');
 
         // 商品基本資料
@@ -96,7 +103,6 @@ class ProductController extends Controller
         }
 
         // $productInput['end_date'] = '2035-12-31';
-
         // $productInput['user_id'] = auth()->id();
 
         DB::beginTransaction();
@@ -120,7 +126,7 @@ class ProductController extends Controller
             }
 
             // 規格
-            foreach ($input['spec_parent_name'] as $k => $specName) {
+            foreach ($input['spec_childen'] as $k => $specChilden) {
                 $specInput = [
                     'category_id' => $input["spec_childen"][$k],
                     'product_id' => $product->id,
@@ -147,7 +153,7 @@ class ProductController extends Controller
             DB::commit();
 
             // cache()->set('product_' . $product->id, $product->toJson());
-            
+
         } catch (Exception $e) {
             $errors = ['database_error' => $e->getMessage()];
             DB::rollBack();
@@ -221,6 +227,7 @@ class ProductController extends Controller
             $input['part_number'] = '';
         }
 
+        // todo mongodb 加入商品資訊，設定過期時間，讓 mongodb 自動刪除
         // $input['end_date'] = '2035-12-31';
         // $input['user_id'] = auth()->id();
 
@@ -249,7 +256,7 @@ class ProductController extends Controller
 
             // 規格
             //$pSpec = app(ProductSpec::class);
-            foreach ($input['spec_parent_name'] as $k => $spec_name) {
+            foreach ($input['spec_childen'] as $k => $specChilden) {
                 $spec_input = [
                     'category_id' => $input["spec_childen"][$k],
                     'product_id' => $product->id,
@@ -279,7 +286,7 @@ class ProductController extends Controller
             // $category = app(RelationShipCatory::class);
             // $obj = $category->findOrFail($input['category_id']);
             // $obj->update($category_input);
-            
+
             // cache()->set('product_' . $product->id, $product->toJson());
             // Mail::to(auth()->user())->later(60, new ProductUpdate($product));
 

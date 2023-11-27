@@ -29,32 +29,32 @@ class Product extends Model
 
     public function images()
     {
-        $model_app = app(\App\Models\Shop\Product::class);
-        return $this->hasMany(\App\Models\Shop\ProductImage::class, 'item_id', 'id')
+        $model_app = app(Product::class);
+        return $this->hasMany(ProductImage::class, 'item_id', 'id')
             ->where('data_id', $model_app->getModelId());
     }
 
-    public function category()
-    {
-        return $this->hasOneThrough(
-            \App\Models\Category::class,
-            \App\Models\RelationShipCatory::class,
-            'item_id',
-            'id',
-            'id',
-            'category_id'
-        );
-    }
+    // public function category()
+    // {
+    //     return $this->hasOneThrough(
+    //         \App\Models\Category::class,
+    //         \App\Models\RelationShipCatory::class,
+    //         'item_id',
+    //         'id',
+    //         'id',
+    //         'category_id'
+    //     );
+    // }
 
-    public function relationship()
-    {
-        $model_app = app(\App\Models\Shop\Product::class);
-        return $this->hasOne(\App\Models\RelationShipCatory::class, ['data_id', 'item_id'], [$model_app->getModelId(), 'id']);
-    }
+    // public function relationship()
+    // {
+    //     $model_app = app(\App\Models\Shop\Product::class);
+    //     return $this->hasOne(\App\Models\RelationShipCatory::class, ['data_id', 'item_id'], [$model_app->getModelId(), 'id']);
+    // }
 
     public function specs()
     {
-        return $this->hasMany(\App\Models\Shop\ProductSpec::class, 'product_id', 'id');
+        return $this->hasMany(ProductSpec::class, 'product_id', 'id');
     }
 
     /**
@@ -73,7 +73,6 @@ class Product extends Model
      */
     public function getFrontData()
     {
-
         return [
             'id' => $this->id,
             'category' => strip_tags($this->category->name),
