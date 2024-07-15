@@ -291,7 +291,7 @@ class ProductController extends Controller
             // Mail::to(auth()->user())->later(60, new ProductUpdate($product));
 
             DB::commit();
-        } catch (Exception) {
+        } catch (Exception $e) {
             $errors = ['database_error' => $e->getMessage()];
             DB::rollBack();
         }

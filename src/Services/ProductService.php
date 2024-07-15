@@ -18,6 +18,15 @@ class ProductService
      */
     public function getByPage(PageCondition $condition): LengthAwarePaginator
     {
+        try {
+            // $this->product->with('specs')->paginate(
+            //     $prePage = $condition->getValue('limit'),
+            //     $columns = ['*']
+            // );
+            $this->product->get();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
         return $this->product->with('specs')->paginate(
             $prePage = $condition->getValue('limit'),
             $columns = ['*']

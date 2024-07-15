@@ -13,6 +13,8 @@ class Product extends Model
     use HasModelId;
     use HasFrontData;
 
+    protected $connection = 'mysql';
+
     protected $table = 'pj_product';
 
     protected $fillable = [
