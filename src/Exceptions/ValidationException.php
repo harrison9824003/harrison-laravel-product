@@ -19,6 +19,6 @@ class ValidationException extends ApiException
             $errorMessage,
             $validator->errors()->getMessages(),
             $throwable
-        );        
+        );
     }
 }
