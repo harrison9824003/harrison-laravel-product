@@ -2,11 +2,24 @@
 
 namespace Harrison\LaravelProduct\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Harrison\LaravelProduct\Traits\HasModelId;
 use Harrison\LaravelProduct\Traits\HasFrontData;
 
+/**
+ * 商品
+ * @param int id 編號
+ * @param string name 商品名稱
+ * @param int price 價格
+ * @param int market_price 建議售價
+ * @param string simple_intro 簡介
+ * @param string intro 內容
+ * @param string part_number 商品編號
+ * @param Carbon created_at 建立時間
+ * @param Carbon updated_at 更新時間
+ */
 class Product extends Model
 {
     use HasFactory;
@@ -17,6 +30,11 @@ class Product extends Model
 
     protected $table = 'pj_product';
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
     protected $fillable = [
         'name',
         'price',
@@ -24,9 +42,8 @@ class Product extends Model
         'simple_intro',
         'intro',
         'part_number',
-        'start_date',
-        'end_date',
-        'user_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function images()

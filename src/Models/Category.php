@@ -2,10 +2,21 @@
 
 namespace Harrison\LaravelProduct\Models;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Harrison\LaravelProduct\Traits\HasModelId;
 
+/**
+ * 商品分類
+ * @param int id 編號
+ * @param int parent_id 父類別編號
+ * @param string name 分類名稱
+ * @param int order 排序
+ * @param bool display 是否顯示
+ * @param Carbon created_at 建立時間
+ * @param Carbon updated_at 更新時間
+ */
 class Category extends Model
 {
     use HasFactory;
@@ -17,6 +28,12 @@ class Category extends Model
         'name',
         'order',
         'display'
+    ];
+
+    protected $casts = [
+        'display' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function category()

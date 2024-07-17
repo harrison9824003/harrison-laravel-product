@@ -2,6 +2,9 @@
 
 namespace Harrison\LaravelProduct\Models\ValueObjects\Product;
 
+/**
+ * 商品列表分頁條件
+ */
 class PageCondition
 {
     public function __construct(

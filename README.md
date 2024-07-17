@@ -20,4 +20,3 @@ class `Harrison\LaravelProduct\Providers\HarrisonLaravelProductProvider`
 
 1. 初始化載入模板、migration、config、route
 2. `singleton` 每個 model，建立 model id 到物件，id 提供給全站判斷是哪一種資料類型
-

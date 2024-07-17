@@ -11,5 +11,7 @@
             "email": "harrison9824003@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "nesbot/carbon": "^3.7"
+    }
 }
