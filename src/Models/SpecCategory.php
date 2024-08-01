@@ -4,7 +4,6 @@ namespace Harrison\LaravelProduct\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Harrison\LaravelProduct\Traits\HasModelId;
 
 /**
  * 商品規格分類
@@ -16,7 +15,6 @@ use Harrison\LaravelProduct\Traits\HasModelId;
 class SpecCategory extends Model
 {
     use HasFactory;
-    use HasModelId;
 
     protected $table = 'pj_spec_category';
 

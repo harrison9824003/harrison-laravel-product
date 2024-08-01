@@ -5,7 +5,6 @@ namespace Harrison\LaravelProduct\Models;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Harrison\LaravelProduct\Traits\HasModelId;
 
 /**
  * 商品圖片
@@ -21,7 +20,6 @@ use Harrison\LaravelProduct\Traits\HasModelId;
 class ProductImage extends Model
 {
     use HasFactory;
-    use HasModelId;
 
     protected $table = 'pj_image';
 

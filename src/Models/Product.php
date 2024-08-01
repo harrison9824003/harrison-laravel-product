@@ -5,8 +5,6 @@ namespace Harrison\LaravelProduct\Models;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Harrison\LaravelProduct\Traits\HasModelId;
-use Harrison\LaravelProduct\Traits\HasFrontData;
 
 /**
  * 商品
@@ -23,8 +21,6 @@ use Harrison\LaravelProduct\Traits\HasFrontData;
 class Product extends Model
 {
     use HasFactory;
-    use HasModelId;
-    use HasFrontData;
 
     protected $connection = 'mysql';
 

@@ -5,7 +5,6 @@ namespace Harrison\LaravelProduct\Models;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Harrison\LaravelProduct\Traits\HasModelId;
 
 /**
  * 商品分類
@@ -20,7 +19,6 @@ use Harrison\LaravelProduct\Traits\HasModelId;
 class Category extends Model
 {
     use HasFactory;
-    use HasModelId;
 
     protected $table = 'pj_category';
     protected $fillable = [
