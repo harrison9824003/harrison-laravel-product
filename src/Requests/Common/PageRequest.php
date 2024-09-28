@@ -1,8 +1,11 @@
 <?php
 
-namespace Harrison\LaravelProduct\Requests;
+namespace Harrison\LaravelProduct\Requests\Common;
 
-class ProductPageRequest extends ApiRequest
+use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Requests\ApiRequest;
+
+class PageRequest extends ApiRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -29,5 +32,32 @@ class ProductPageRequest extends ApiRequest
             'perPage.lte' => '每頁筆數須小於等於總筆數',
             'currentPage.lte' => '當前頁數須小於等於總頁數',
         ];
+    }
+
+    /**
+     * 取回每頁顯示筆數
+     */
+    public function getPerPage(): int
+    {
+        return $this->input('perPage', 10);
+    }
+
+    /**
+     * 取回當前頁數
+     */
+    public function getCurrentPage(): int
+    {
+        return $this->input('currentPage', 1);
+    }
+
+    /**
+     * 取回頁面基本資訊物件
+     */
+    public function getPageCondition(): PageCondition
+    {
+        return new PageCondition(
+            $this->getCurrentPage(),
+            $this->getPerPage()
+        );
     }
 }

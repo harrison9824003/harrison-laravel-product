@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * 商品規格分類
  * 提供給商品設定時選擇分類
- * @param int id 編號
- * @param int parent_id 父類別編號
- * @param string name 分類名稱
+ * @property int id 編號 (auto increment)
+ * @property int parent_id 父類別編號
+ * @property string name 分類名稱
  */
 class SpecCategory extends Model
 {

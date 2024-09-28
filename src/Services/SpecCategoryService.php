@@ -9,47 +9,40 @@ use Illuminate\Support\Collection;
 
 class SpecCategoryService
 {
-    public function __construct(
-        private SpecCategory $specCategory
-    ) {
-    }
+    public function __construct() {}
 
     public function getByParentId(int $parentId = 0): Collection
     {
-        return $this->specCategory->where('parent_id', $parentId)->get();
+        return SpecCategory::where('parent_id', $parentId)->get();
     }
 
     public function getChildenSpec(int $parentId): Collection
     {
-        return $this->specCategory
-            ->select(['id', 'name', 'parent_id'])
+        return SpecCategory::select(
+                ['id', 'name', 'parent_id']
+            )
             ->where('parent_id', $parentId)
             ->get();
     }
 
     public function getByPage(PageCondition $condition): LengthAwarePaginator
     {
-        return $this->specCategory->paginate(
+        return SpecCategory::paginate(
             $prePage = $condition->getValue('limit'),
             $columns = ['*']
         );
     }
 
-    public function create(array $input): SpecCategory
+    public function create(string $name, int $parentId): SpecCategory
     {
-        return $this->specCategory->create($input);
+        return SpecCategory::create([
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
     }
 
     public function find(int $id): SpecCategory
     {
-        return $this->specCategory->findOrFail($id);
-    }
-
-    /**
-     * 取得商品規格 model id
-     */
-    public function getModelId(): int
-    {
-        return $this->specCategory->getModelId();
+        return SpecCategory::findOrFail($id);
     }
 }

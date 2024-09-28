@@ -30,4 +30,20 @@ class ProductSpecRequest extends ApiRequest
             'parent_id.integer' => 'parent_id 必須為數字'
         ];
     }
+
+    /**
+     * 取回名稱
+     */
+    public function getName(): string
+    {
+        return $this->input('name');
+    }
+
+    /**
+     * 取回父類別編號
+     */
+    public function getParentId(): int
+    {
+        return $this->input('parent_id', 0);
+    }
 }

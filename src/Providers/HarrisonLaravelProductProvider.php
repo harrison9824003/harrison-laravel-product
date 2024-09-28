@@ -27,7 +27,7 @@ class HarrisonLaravelProductProvider extends ServiceProvider
         $models->each(function($item){
             $this->app->singleton($item['class'], function () use ($item) {
                 $object = new $item['class']();
-                $object->setModelId($item['id']);
+                // $object->setModelId($item['id']);
                 return $object;
             });
         });

@@ -14,7 +14,7 @@ class ApiException extends HttpException implements Responsable
     public function __construct(
         private string $errorCode,
         private string $errorMessage,
-        private array $errorDetail,
+        private array $errorDetail = [],
         private ?Throwable $throwable = null
     ) {
         parent::__construct(self::STATUS_CODE, $errorMessage, $throwable);
