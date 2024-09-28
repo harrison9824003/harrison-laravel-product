@@ -14,7 +14,9 @@ class HarrisonLaravelProductProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../views/mails', 'ProductMails');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->mergeConfigFrom(__DIR__.'/../config/product.php', 'products');
-        
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/database.php', 'database.connections.harrison_laravel_product'
+        );
     }
 
     /**
@@ -22,14 +24,5 @@ class HarrisonLaravelProductProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $models = collect(config('products'));
-
-        $models->each(function($item){
-            $this->app->singleton($item['class'], function () use ($item) {
-                $object = new $item['class']();
-                // $object->setModelId($item['id']);
-                return $object;
-            });
-        });
     }
 }

@@ -16,6 +16,8 @@ class SpecCategory extends Model
 {
     use HasFactory;
 
+    protected $connection = 'harrison_laravel_product';
+
     protected $table = 'pj_spec_category';
 
     protected $fillable = [

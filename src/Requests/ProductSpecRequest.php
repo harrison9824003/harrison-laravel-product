@@ -16,7 +16,6 @@ class ProductSpecRequest extends ApiRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('pj_spec_category')->ignore($this->route('spec')),
                 'max:255'
             ],
             'parent_id' => 'nullable|integer',

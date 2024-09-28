@@ -41,8 +41,33 @@ class SpecCategoryService
         ]);
     }
 
+    /**
+     * 查詢單一商品規格
+     */
     public function find(int $id): SpecCategory
     {
         return SpecCategory::findOrFail($id);
+    }
+
+    /**
+     * 檢查是否有相同名稱的商品規格在同一階層
+     */
+    public function findByName(string $name, int $parentId): ?SpecCategory
+    {
+        return SpecCategory::where([
+            'name' => $name,
+            'parent_id' => $parentId
+        ])->first();
+    }
+
+    /**
+     * 更新商品規格
+     */
+    public function update(int $id, string $name, int $parentId): void
+    {
+        SpecCategory::where('id', $id)->update([
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
     }
 }

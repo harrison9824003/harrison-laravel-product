@@ -21,6 +21,8 @@ class ProductImage extends Model
 {
     use HasFactory;
 
+    protected $connection = 'harrison_laravel_product';
+
     protected $table = 'pj_image';
 
     protected $fillable = [
@@ -36,10 +38,10 @@ class ProductImage extends Model
         'updated_at' => 'datetime'
     ];
 
-    public function datatype()
-    {
-        return $this->belongsTo(DataType::class, 'id', 'data_id');
-    }
+    // public function datatype()
+    // {
+    //     return $this->belongsTo(DataType::class, 'id', 'data_id');
+    // }
 
     public function product()
     {

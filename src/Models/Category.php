@@ -20,6 +20,8 @@ class Category extends Model
 {
     use HasFactory;
 
+    protected $connection = 'harrison_laravel_product';
+
     protected $table = 'pj_category';
     protected $fillable = [
         'parent_id',

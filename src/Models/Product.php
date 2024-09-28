@@ -22,7 +22,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql';
+    protected $connection = 'harrison_laravel_product';
 
     protected $table = 'pj_product';
 

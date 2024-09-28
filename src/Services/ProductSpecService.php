@@ -33,6 +33,14 @@ class ProductSpecService
     }
 
     /**
+     * 下架特定規格的商品,將 status 設為 0
+     */
+    public function deleteProductSpecBySpecId(int $specId): void
+    {
+        $this->productSpec->where('spec_id', $specId)->update(['status' => 0]);
+    }
+
+    /**
      * 取得商品規格 model id
      */
     public function getModelId(): int

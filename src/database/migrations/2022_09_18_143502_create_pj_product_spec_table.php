@@ -22,6 +22,7 @@ class CreatePjProductSpecTable extends Migration
             $table->string('volume', 100)->comment('材積');
             $table->string('weight', 100)->comment('重量');
             $table->integer('order')->comment('排序');
+            $table->tinyInteger('status')->default(1)->comment('狀態 1:啟用 0:停用');
 
             $table->timestamps();
         });
