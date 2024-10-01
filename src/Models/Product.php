@@ -47,27 +47,8 @@ class Product extends Model
     {
         $model_app = app(Product::class);
 
-        return $this->hasMany(ProductImage::class, 'item_id', 'id')
-            ->where('data_id', $model_app->getModelId());
+        return $this->hasMany(ProductImage::class, 'item_id', 'id');
     }
-
-    // public function category()
-    // {
-    //     return $this->hasOneThrough(
-    //         \App\Models\Category::class,
-    //         \App\Models\RelationShipCatory::class,
-    //         'item_id',
-    //         'id',
-    //         'id',
-    //         'category_id'
-    //     );
-    // }
-
-    // public function relationship()
-    // {
-    //     $model_app = app(\App\Models\Shop\Product::class);
-    //     return $this->hasOne(\App\Models\RelationShipCatory::class, ['data_id', 'item_id'], [$model_app->getModelId(), 'id']);
-    // }
 
     public function specs()
     {

@@ -7,6 +7,9 @@ use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
 use Harrison\LaravelProduct\Services\Traits\DatabaseService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * 商品服務
+ */
 class ProductService
 {
     use DatabaseService;
@@ -55,13 +58,5 @@ class ProductService
     public function update(Product $updateProduct, array $input): void
     {
         $updateProduct->update($input);
-    }
-
-    /**
-     * 取得商品 model id
-     */
-    public function getModelId(): int
-    {
-        return Product::getModelId();
     }
 }

@@ -16,19 +16,10 @@ class ProductImageService
         return $this->productImage->create($input);
     }
 
-    /**
-     * 取得商品圖片 model id
-     */
-    public function getModelId(): int
-    {
-        return $this->productImage->getModelId();
-    }
-
     public function getProductImage(int $id): Collection
     {
         return $this->productImage
             ->where('item_id', $id)
-            ->where('data_id', $this->getModelId())
             ->get();
     }
 }

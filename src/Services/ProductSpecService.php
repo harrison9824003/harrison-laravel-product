@@ -5,6 +5,9 @@ namespace Harrison\LaravelProduct\Services;
 use Harrison\LaravelProduct\Models\ProductSpec;
 use Illuminate\Support\Collection;
 
+/**
+ * 商品規格服務
+ */
 class ProductSpecService
 {
     public function __construct(
@@ -37,14 +40,6 @@ class ProductSpecService
     public function deleteProductSpecBySpecId(int $specId): void
     {
         $this->productSpec->where('spec_id', $specId)->update(['status' => 0]);
-    }
-
-    /**
-     * 取得商品規格 model id
-     */
-    public function getModelId(): int
-    {
-        return $this->productSpec->getModelId();
     }
 
     public function getProductSpec(int $productId): Collection

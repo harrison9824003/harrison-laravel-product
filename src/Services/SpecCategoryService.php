@@ -7,6 +7,9 @@ use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
+/**
+ * 規格分類服務
+ */
 class SpecCategoryService
 {
     public function __construct() {}
