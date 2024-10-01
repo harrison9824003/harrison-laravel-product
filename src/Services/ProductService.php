@@ -11,8 +11,7 @@ class ProductService
 {
     use DatabaseService;
 
-    public function __construct() {
-    }
+    public function __construct() {}
 
     /**
      * 商品列表
@@ -27,6 +26,7 @@ class ProductService
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
+
         return Product::with('specs')->paginate(
             $prePage = $condition->getValue('limit'),
             $columns = ['*']

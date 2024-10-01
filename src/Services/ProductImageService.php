@@ -9,8 +9,7 @@ class ProductImageService
 {
     public function __construct(
         private ProductImage $productImage
-    ) {
-    }
+    ) {}
 
     public function create(array $input): ProductImage
     {

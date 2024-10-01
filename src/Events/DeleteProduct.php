@@ -3,12 +3,9 @@
 namespace Harrison\LaravelProduct\Events;
 
 use Harrison\LaravelProduct\Models\Product;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -17,7 +14,9 @@ class DeleteProduct
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $product;
+
     public $user;
+
     /**
      * Create a new event instance.
      *

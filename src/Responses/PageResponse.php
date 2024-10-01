@@ -2,6 +2,4 @@
 
 namespace Harrison\LaravelProduct\Responses;
 
-class PageResponse
-{
-}
+class PageResponse {}

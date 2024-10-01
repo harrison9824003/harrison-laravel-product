@@ -2,8 +2,6 @@
 
 namespace Harrison\LaravelProduct\Requests;
 
-use Illuminate\Validation\Rule;
-
 class ProductSpecRequest extends ApiRequest
 {
     /**
@@ -16,7 +14,7 @@ class ProductSpecRequest extends ApiRequest
         return [
             'name' => [
                 'required',
-                'max:255'
+                'max:255',
             ],
             'parent_id' => 'nullable|integer',
         ];
@@ -26,7 +24,7 @@ class ProductSpecRequest extends ApiRequest
     {
         return [
             'name.max' => '名稱最大字數為 255 字元',
-            'parent_id.integer' => 'parent_id 必須為數字'
+            'parent_id.integer' => 'parent_id 必須為數字',
         ];
     }
 

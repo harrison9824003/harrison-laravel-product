@@ -9,8 +9,7 @@ class ProductSpecService
 {
     public function __construct(
         private ProductSpec $productSpec
-    ) {
-    }
+    ) {}
 
     public function create(array $input): ProductSpec
     {

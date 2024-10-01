@@ -2,12 +2,13 @@
 
 namespace Harrison\LaravelProduct\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * 商品圖片
+ *
  * @param int id 編號
  * @param int data_id 資料編號
  * @param int item_id 商品編號
@@ -35,7 +36,7 @@ class ProductImage extends Model
 
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     // public function datatype()

@@ -12,8 +12,8 @@ class ApiResponse extends JsonResponse
         int $statusCode = 200
     ) {
         parent::__construct([
-            "data" => $data,
-            "metadata" => $metadata,
+            'data' => $data,
+            'metadata' => $metadata,
 
         ], $statusCode);
     }

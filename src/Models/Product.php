@@ -2,12 +2,13 @@
 
 namespace Harrison\LaravelProduct\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * 商品
+ *
  * @param int id 編號
  * @param string name 商品名稱
  * @param int price 價格
@@ -28,7 +29,7 @@ class Product extends Model
 
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -45,6 +46,7 @@ class Product extends Model
     public function images()
     {
         $model_app = app(Product::class);
+
         return $this->hasMany(ProductImage::class, 'item_id', 'id')
             ->where('data_id', $model_app->getModelId());
     }
@@ -93,16 +95,16 @@ class Product extends Model
             'category' => strip_tags($this->category->name),
             'title' => strip_tags($this->name),
             'sub_title' => null,
-            'create' => date("Y-m-d", strtotime($this->created_at)),
-            'update' =>  date("Y-m-d", strtotime($this->updated_at)),
+            'create' => date('Y-m-d', strtotime($this->created_at)),
+            'update' => date('Y-m-d', strtotime($this->updated_at)),
             'create_person' => null,
             'update_person' => null,
             'content' => $this->intro,
             'simple_content' => strip_tags($this->simple_intro),
             'other' => [
                 'images' => $this->images,
-                'specs' => $this->specs
-            ]
+                'specs' => $this->specs,
+            ],
         ];
     }
 }

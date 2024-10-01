@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * 商品規格分類
  * 提供給商品設定時選擇分類
+ *
  * @property int id 編號 (auto increment)
  * @property int parent_id 父類別編號
  * @property string name 分類名稱
@@ -22,7 +23,7 @@ class SpecCategory extends Model
 
     protected $fillable = [
         'parent_id',
-        'name'
+        'name',
     ];
 
     public function childern()
@@ -35,6 +36,7 @@ class SpecCategory extends Model
         if ($this->parent_id === 0) {
             return null;
         }
+
         return $this->hasOne(SpecCategory::class, 'id', 'parent_id');
     }
 }

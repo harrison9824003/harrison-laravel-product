@@ -18,7 +18,7 @@ class PageRequest extends ApiRequest
             'perPage' => 'nullable|integer|lte:total',
             'currentPage' => 'nullable|integer|lte:lastPage',
             'total' => 'nullable|integer',
-            'lastPage' => 'nullable|integer'
+            'lastPage' => 'nullable|integer',
         ];
     }
 

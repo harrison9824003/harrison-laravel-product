@@ -2,12 +2,13 @@
 
 namespace Harrison\LaravelProduct\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * 商品分類
+ *
  * @param int id 編號
  * @param int parent_id 父類別編號
  * @param string name 分類名稱
@@ -23,17 +24,18 @@ class Category extends Model
     protected $connection = 'harrison_laravel_product';
 
     protected $table = 'pj_category';
+
     protected $fillable = [
         'parent_id',
         'name',
         'order',
-        'display'
+        'display',
     ];
 
     protected $casts = [
         'display' => 'boolean',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function category()

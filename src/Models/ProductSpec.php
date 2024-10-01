@@ -2,12 +2,13 @@
 
 namespace Harrison\LaravelProduct\Models;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * 商品規格
+ *
  * @param int id 編號
  * @param int category_id 規格類別 id (pj_spec_category.id)
  * @param int product_id 商品 id
@@ -25,11 +26,11 @@ class ProductSpec extends Model
 
     protected $connection = 'harrison_laravel_product';
 
-    protected $table = "pj_product_spec";
+    protected $table = 'pj_product_spec';
 
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     protected $fillable = [
@@ -39,7 +40,7 @@ class ProductSpec extends Model
         'low_reserve_num',
         'volume',
         'weight',
-        'order'
+        'order',
     ];
 
     public function product()

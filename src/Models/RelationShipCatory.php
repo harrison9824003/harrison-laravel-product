@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * 商品分類關聯網站分類
+ *
  * @param int id 編號
  * @param int data_id 資料 id e.g. 商品
  * @param int category_id 類別 id
@@ -23,6 +24,6 @@ class RelationShipCatory extends Model
     protected $fillable = [
         'data_id',
         'category_id',
-        'item_id'
+        'item_id',
     ];
 }

@@ -9,8 +9,7 @@ class CategoryService
 {
     public function __construct(
         private Category $category
-    ) {
-    }
+    ) {}
 
     public function getByParentId(int $parentId = 0): Collection
     {

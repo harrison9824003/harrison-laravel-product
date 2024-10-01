@@ -17,7 +17,7 @@ class ProductRequest extends ApiRequest
             'name' => [
                 'required',
                 new UniqueProductRule($this->route('product')),
-                'max:255'
+                'max:255',
             ],
             'price' => 'required|integer',
             'market_price' => 'nullable|integer',

@@ -19,8 +19,8 @@ class SpecCategoryService
     public function getChildenSpec(int $parentId): Collection
     {
         return SpecCategory::select(
-                ['id', 'name', 'parent_id']
-            )
+            ['id', 'name', 'parent_id']
+        )
             ->where('parent_id', $parentId)
             ->get();
     }
@@ -37,7 +37,7 @@ class SpecCategoryService
     {
         return SpecCategory::create([
             'name' => $name,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
         ]);
     }
 
@@ -56,7 +56,7 @@ class SpecCategoryService
     {
         return SpecCategory::where([
             'name' => $name,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
         ])->first();
     }
 
@@ -67,7 +67,7 @@ class SpecCategoryService
     {
         SpecCategory::where('id', $id)->update([
             'name' => $name,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
         ]);
     }
 }
