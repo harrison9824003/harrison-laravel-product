@@ -2,7 +2,7 @@
 
 namespace Harrison\LaravelProduct\Requests;
 
-use Illuminate\Validation\Rule;
+use Harrison\LaravelProduct\Rules\UniqueProductRule;
 
 class ProductRequest extends ApiRequest
 {
@@ -16,7 +16,7 @@ class ProductRequest extends ApiRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('pj_product')->ignore($this->route('product')),
+                new UniqueProductRule($this->route('product')),
                 'max:255'
             ],
             'price' => 'required|integer',

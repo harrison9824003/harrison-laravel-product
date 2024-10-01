@@ -32,6 +32,9 @@ class SpecCategory extends Model
 
     public function parent()
     {
+        if ($this->parent_id === 0) {
+            return null;
+        }
         return $this->hasOne(SpecCategory::class, 'id', 'parent_id');
     }
 }

@@ -4,13 +4,14 @@ namespace Harrison\LaravelProduct\Services;
 
 use Harrison\LaravelProduct\Models\Product;
 use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Services\Traits\DatabaseService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductService
 {
-    public function __construct(
-        private Product $product
-    ) {
+    use DatabaseService;
+
+    public function __construct() {
     }
 
     /**
@@ -19,14 +20,14 @@ class ProductService
     public function getByPage(PageCondition $condition): LengthAwarePaginator
     {
         try {
-            $this->product->with('specs')->paginate(
+            Product::with('specs')->paginate(
                 $prePage = $condition->getValue('limit'),
                 $columns = ['*']
             );
         } catch (\Exception $e) {
             dd($e->getMessage());
         }
-        return $this->product->with('specs')->paginate(
+        return Product::with('specs')->paginate(
             $prePage = $condition->getValue('limit'),
             $columns = ['*']
         );
@@ -37,7 +38,7 @@ class ProductService
      */
     public function find(int $id): Product
     {
-        return $this->product->findOrFail($id);
+        return Product::findOrFail($id);
     }
 
     /**
@@ -45,7 +46,7 @@ class ProductService
      */
     public function create(array $input): Product
     {
-        return $this->product->create($input);
+        return Product::create($input);
     }
 
     /**
@@ -61,6 +62,6 @@ class ProductService
      */
     public function getModelId(): int
     {
-        return $this->product->getModelId();
+        return Product::getModelId();
     }
 }
