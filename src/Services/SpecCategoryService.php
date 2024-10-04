@@ -31,8 +31,8 @@ class SpecCategoryService
     public function getByPage(PageCondition $condition): LengthAwarePaginator
     {
         return SpecCategory::paginate(
-            $prePage = $condition->getValue('limit'),
-            $columns = ['*']
+            perPage: $condition->getValue('limit'),
+            columns: ['*']
         );
     }
 

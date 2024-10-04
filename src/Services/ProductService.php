@@ -23,8 +23,8 @@ class ProductService
     {
         try {
             Product::with('specs')->paginate(
-                $prePage = $condition->getValue('limit'),
-                $columns = ['*']
+                perPage: $condition->getValue('limit'),
+                columns: ['*']
             );
         } catch (\Exception $e) {
             dd($e->getMessage());
