@@ -1,6 +1,6 @@
 <?php
 
-namespace Harrison\LaravelProduct\Models\ValueObjects\Product;
+namespace Harrison\LaravelProduct\Models\ValueObjects\Common;
 
 /**
  * 商品列表分頁條件

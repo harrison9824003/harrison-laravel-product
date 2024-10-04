@@ -3,7 +3,7 @@
 namespace Harrison\LaravelProduct\Services;
 
 use Harrison\LaravelProduct\Models\SpecCategory;
-use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Models\ValueObjects\Common\PageCondition;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 

@@ -8,18 +8,16 @@ use Illuminate\Support\Collection;
 class ProductImageService
 {
     public function __construct(
-        private ProductImage $productImage
     ) {}
 
     public function create(array $input): ProductImage
     {
-        return $this->productImage->create($input);
+        return ProductImage::create($input);
     }
 
     public function getProductImage(int $id): Collection
     {
-        return $this->productImage
-            ->where('item_id', $id)
+        return ProductImage::where('item_id', $id)
             ->get();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Harrison\LaravelProduct\Requests\Common;
 
-use Harrison\LaravelProduct\Models\ValueObjects\Product\PageCondition;
+use Harrison\LaravelProduct\Models\ValueObjects\Common\PageCondition;
 use Harrison\LaravelProduct\Requests\ApiRequest;
 
 class PageRequest extends ApiRequest
